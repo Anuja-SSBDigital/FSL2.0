@@ -1,8 +1,6 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,21 +19,20 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 dark">
-    <!-- Header -->
-    <header class="bg-gray-800/95 backdrop-blur-md shadow-lg border-b border-gray-700 sticky top-0 z-40">
+
+<body class="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-100 min-h-screen">
+    <header class="h-14 fixed top-0 left-0 right-0 z-50 bg-gray-800 border-b border-gray-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center h-14">
+            <div class="flex items-center justify-between h-14">
                 <div class="flex items-center">
-                    <!-- Mobile toggle -->
-                    <button id="mobile-toggle" class="lg:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 mr-4">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
+                    <!-- Header -->
+
                     <h1 class="text-xl font-bold bg-gradient-to-r from-fluree-blue to-blue-400 bg-clip-text text-transparent">Fluree Admin</h1>
                 </div>
                 <!-- Search -->
@@ -84,11 +81,10 @@
         </div>
     </header>
 
-    <div class="flex flex-1">
-        <!-- Sidebar -->
-        @auth
-        <div id="sidebar" class="fixed inset-y-14 lg:inset-y-0 left-0 z-50 w-16 lg:w-64 bg-gray-900 shadow-2xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
-            <!-- Logo/User top -->
+    <div class="flex flex-1 min-h-screen">
+        <!-- Sidebar - FIXED VISIBLE ON ALL SIZES -->
+        @if(Session::has('fluree_user') || isset($user))
+        <div id="sidebar" class="fixed top-14 left-0 h-[calc(100vh-56px)] w-64 bg-gray-900 border-r border-gray-800 overflow-y-auto z-40">
             <div class="p-4 border-b border-gray-800 lg:border-b-0">
                 <div class="flex items-center lg:space-x-3 lg:pl-4">
                     <div class="w-10 h-10 bg-gradient-to-r from-fluree-blue to-blue-500 rounded-xl flex items-center justify-center lg:hidden">
@@ -100,26 +96,52 @@
                     </div>
                 </div>
             </div>
-            <!-- Nav -->
+            <!-- Enhanced Nav - Master-detail menu -->
             <nav class="mt-6 px-2 lg:px-4 space-y-1">
+                <!-- Dashboard Master -->
                 <a href="{{ route('dashboard') }}" class="group flex items-center px-3 py-3 rounded-xl transition-all {{ request()->routeIs('dashboard') ? 'bg-fluree-blue text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-gray-800' }}">
                     <svg class="w-5 h-5 mr-0 lg:mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                     </svg>
                     <span class="hidden lg:inline font-medium">Dashboard</span>
                 </a>
-                <a href="#" class="group flex items-center px-3 py-3 rounded-xl transition-all text-gray-400 hover:text-white hover:bg-gray-800">
-                    <svg class="w-5 h-5 mr-0 lg:mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    <span class="hidden lg:inline font-medium">Profile</span>
-                </a>
+
+                <!-- User Management Master (with role division) -->
+                <div>
+                    <a href="#" class="group flex items-center px-3 py-3 rounded-xl transition-all text-gray-400 hover:text-white hover:bg-gray-800 font-semibold cursor-pointer"> <svg class="w-5 h-5 mr-0 lg:mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <span class="hidden lg:inline font-medium">User Management</span>
+                        <svg class="w-4 h-4 ml-auto text-gray-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </a>
+                    <div class="ml-6 lg:ml-10 space-y-1 hidden group-hover:block lg:block">
+                        <!-- Users Submenu -->
+                        <a href="" class="group flex items-center px-3 py-2 rounded-lg transition-all text-xs text-gray-500 hover:text-white hover:bg-gray-800/50 pl-4">
+                            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            Users
+                        </a>
+                        <!-- Roles Division -->
+                        <a href="" class="group flex items-center px-3 py-2 rounded-lg transition-all text-xs text-gray-500 hover:text-white hover:bg-gray-800/50 pl-4">
+                            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                            Roles & Permissions
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Fluree Data -->
                 <a href="#" class="group flex items-center px-3 py-3 rounded-xl transition-all text-gray-400 hover:text-white hover:bg-gray-800">
                     <svg class="w-5 h-5 mr-0 lg:mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                     </svg>
                     <span class="hidden lg:inline font-medium">Fluree Data</span>
                 </a>
+
                 <div class="mt-4 pt-4 border-t border-gray-800">
                     <a href="#" class="group flex items-center px-3 py-3 rounded-xl transition-all text-gray-400 hover:text-white hover:bg-gray-800">
                         <svg class="w-5 h-5 mr-0 lg:mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,87 +160,99 @@
                     </form>
                 </div>
             </nav>
-            <nav class="mt-8 px-4">
-                <a href="{{ route('dashboard') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition {{ request()->routeIs('dashboard') ? 'bg-fluree-blue text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                    Dashboard
-                </a>
-                <a href="#" class="group flex items-center px-4 py-3 mt-2 text-sm font-medium rounded-xl transition text-gray-700 hover:bg-gray-100">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    Profile
-                </a>
-                <a href="#" class="group flex items-center px-4 py-3 mt-2 text-sm font-medium rounded-xl transition text-gray-700 hover:bg-gray-100">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                    </svg>
-                    Fluree Data
-                </a>
-                <a href="#" class="group flex items-center px-4 py-3 mt-2 text-sm font-medium rounded-xl transition text-gray-700 hover:bg-gray-100">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.326.015.56.999 2.573 1.066zM12 12a3 3 0 100-6 3 3 0 000 6z"></path>
-                    </svg>
-                    Settings
-                </a>
-                <a href="{{ route('logout') }}" class="group flex items-center px-4 py-3 mt-4 text-sm font-medium rounded-xl transition text-gray-700 hover:bg-red-50 hover:text-red-600" onclick="event.preventDefault(); this.closest('form').submit();">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                    </svg>
-                    Logout
-                </a>
-            </nav>
+
         </div>
-<div class="lg:ml-16 xl:ml-64 p-6 space-y-6">
-            <!-- Mobile sidebar overlay -->
-            <div id="mobile-overlay" class="fixed inset-0 z-40 bg-black/50 lg:hidden hidden" aria-hidden="true"></div>
-            @yield('content')
+
+        <div class="{{ (Session::has('fluree_user') || isset($user)) ? 'ml-64' : '' }} pt-14 flex-1 overflow-y-auto">
+            <div class="max-w-7xl mx-auto px-6 py-6 space-y-8">
+                @yield('content')
+            </div>
         </div>
         @else
-        <div class="p-6 lg:p-8 space-y-6">
-            @yield('content')
+        <div class="{{ (Session::has('fluree_user') || isset($user)) ? 'ml-64' : '' }} pt-14 flex-1 overflow-y-auto">
+            <div class="max-w-7xl mx-auto px-6 py-6 space-y-8">
+                @yield('content')
+            </div>
         </div>
-        @endauth
+        @endif
     </div>
 
     <!-- Scripts -->
-    @auth
-    <script>
-        // Sidebar toggle
-        const sidebar = document.getElementById('sidebar');
-        const mobileToggle = document.getElementById('mobile-toggle');
-        const mobileOverlay = document.getElementById('mobile-overlay');
+    @if(Session::has('fluree_user') || isset($user))
+    <!-- <script>
+        // Sidebar submenu toggle
+        document.querySelectorAll('.group:has(a)').forEach(parent => {
+            const submenu = parent.querySelector('.ml-6, .ml-10');
+            const toggle = parent.querySelector('a:first-child');
+            toggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                submenu.classList.toggle('hidden');
+            });
+        });
 
-        function toggleSidebar() {
-            sidebar.classList.toggle('-translate-x-full');
-            mobileOverlay.classList.toggle('hidden');
+        const userManagement = document.querySelector('a[href="#"][class*="User Management"]');
+        if (userManagement) {
+            const submenu = userManagement.parentElement.querySelector('.ml-6, .ml-10');
+
+            userManagement.addEventListener('click', function(e) {
+                e.preventDefault();
+                submenu.classList.toggle('hidden');
+
+                // Optional: rotate the arrow
+                const arrow = this.querySelector('svg:last-child');
+                if (arrow) arrow.classList.toggle('rotate-180');
+            });
         }
-
-        mobileToggle?.addEventListener('click', toggleSidebar);
-        mobileOverlay?.addEventListener('click', toggleSidebar);
 
         // Profile dropdown
         const profileBtn = document.getElementById('profile-btn');
         const profileMenu = document.getElementById('profile-menu');
-        profileBtn?.addEventListener('click', () => {
-            profileMenu.classList.toggle('hidden');
-        });
+        if (profileBtn && profileMenu) {
+            profileBtn.addEventListener('click', (e) => {
+                e.stopImmediatePropagation();
+                profileMenu.classList.toggle('hidden');
+            });
+        }
 
-        // Close dropdown on outside click
+        // Close profile dropdown when clicking outside
         document.addEventListener('click', (e) => {
-            if (!profileBtn?.contains(e.target)) {
-                profileMenu.classList.add('hidden');
+            if (profileBtn && !profileBtn.contains(e.target)) {
+                profileMenu?.classList.add('hidden');
             }
         });
+    </script> -->
 
-        // Dark mode toggle (placeholder)
-        document.getElementById('dark-toggle')?.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
+    <script>
+        // User Management Submenu Toggle
+        const userBtn = document.getElementById('user-management-btn');
+        const submenu = document.getElementById('user-submenu');
+        const arrow = document.getElementById('user-arrow');
+
+        if (userBtn && submenu) {
+            userBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                submenu.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
+            });
+        }
+
+        // Profile dropdown (keep your existing one)
+        const profileBtn = document.getElementById('profile-btn');
+        const profileMenu = document.getElementById('profile-menu');
+        if (profileBtn && profileMenu) {
+            profileBtn.addEventListener('click', (e) => {
+                e.stopImmediatePropagation();
+                profileMenu.classList.toggle('hidden');
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (profileBtn && !profileBtn.contains(e.target)) {
+                profileMenu?.classList.add('hidden');
+            }
         });
     </script>
-    @endauth
+    @endif
 </body>
-</html>
 
+</html>
