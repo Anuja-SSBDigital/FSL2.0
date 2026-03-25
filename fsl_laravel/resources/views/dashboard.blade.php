@@ -3,20 +3,113 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<!-- Welcome row -->
-<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
-    <div>
-        <h1 class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">Dashboard</h1>
-        <p class="text-gray-400 text-lg">Welcome back, {{ $user['username'] ?? 'Admin' }}! Here's what's happening with your Fluree data.</p>
-    </div>
+<!-- Master Dashboard Overview -->
+<div class="space-y-10">    <!-- Header with quick stats -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div>
+            <h1 class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">Dashboard Overview</h1>
+            <p class="text-gray-400 text-lg">Manage your Fluree data and system users</p>
+        </div>
         <div class="flex items-center space-x-3 mt-4 lg:mt-0">
-            <button class="px-6 py-2.5 bg-fluree-blue/90 hover:bg-fluree-blue text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+            <a href="" class="bg-fluree-blue hover:bg-fluree-blue/90 text-white px-6 py-2.5 font-medium rounded-xl shadow-lg hover:shadow-xl transition-all">
+                Manage Users
+            </a>
+            <button class="px-6 py-2.5 border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white font-medium rounded-xl transition-all">
                 New Query
             </button>
-            <button class="px-6 py-2.5 border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white font-medium rounded-xl transition-all duration-200">
-                Export Report
-            </button>
         </div>
+    </div>
+
+    <!-- Quick Access Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Users Overview -->
+<a href="" class="group bg-gray-800/50 hover:bg-gray-800 border border-gray-700 hover:border-fluree-blue rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 group-hover:text-fluree-blue transition">Total Users</p>
+                    <p class="text-3xl font-bold text-white mt-1">24</p>
+                </div>
+                <div class="w-12 h-12 bg-fluree-blue/20 group-hover:bg-fluree-blue/30 rounded-xl flex items-center justify-center p-3 transition">
+                    <svg class="w-6 h-6 text-fluree-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="flex space-x-1 text-sm">
+                    <span class="text-emerald-400 font-medium">+2</span>
+                    <span class="text-gray-500">this week</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Roles Overview -->
+        <a href="" class="group bg-gray-800/50 hover:bg-gray-800 border border-gray-700 hover:border-emerald-500 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 group-hover:text-emerald-500 transition">Roles</p>
+                    <p class="text-3xl font-bold text-white mt-1">5</p>
+                </div>
+                <div class="w-12 h-12 bg-emerald-500/20 group-hover:bg-emerald-500/30 rounded-xl flex items-center justify-center p-3 transition">
+                    <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="flex space-x-1 text-sm">
+                    <span class="text-emerald-400 font-medium">+1</span>
+                    <span class="text-gray-500">new role</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Queries Overview -->
+        <div class="group bg-gray-800/50 hover:bg-gray-800 border border-gray-700 hover:border-purple-500 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 group-hover:text-purple-500 transition">Recent Queries</p>
+                    <p class="text-3xl font-bold text-white mt-1">1,234</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-500/20 group-hover:bg-purple-500/30 rounded-xl flex items-center justify-center p-3 transition">
+                    <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation quick links -->
+    <div class="bg-gray-800/30 border border-gray-700 rounded-2xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-6">Quick Navigation</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="" class="group p-4 rounded-xl border border-gray-700 hover:border-fluree-blue hover:bg-gray-800/50 transition-all text-center">
+                <svg class="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-fluree-blue transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <div class="text-sm font-medium text-white group-hover:text-fluree-blue">Users</div>
+            </a>
+<a href="" class="group p-4 rounded-xl border border-gray-700 hover:border-emerald-500 hover:bg-gray-800/50 transition-all text-center">
+                <svg class="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-emerald-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+                <div class="text-sm font-medium text-white group-hover:text-emerald-500">Roles</div>
+            </a>
+            <a href="#" class="group p-4 rounded-xl border border-gray-700 hover:border-purple-500 hover:bg-gray-800/50 transition-all text-center">
+                <svg class="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-purple-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+                <div class="text-sm font-medium text-white group-hover:text-purple-500">Queries</div>
+            </a>
+            <a href="#" class="group p-4 rounded-xl border border-gray-700 hover:border-orange-500 hover:bg-gray-800/50 transition-all text-center">
+                <svg class="w-8 h-8 mx-auto mb-2 text-gray-400 group-hover:text-orange-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div class="text-sm font-medium text-white group-hover:text-orange-500">Reports</div>
+            </a>
+        </div>
+    </div>
 </div>
 
 <!-- Stats row -->
