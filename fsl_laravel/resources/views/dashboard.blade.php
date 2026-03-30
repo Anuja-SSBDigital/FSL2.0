@@ -23,7 +23,7 @@
     <!-- Quick Access Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Users Overview -->
-<a href="" class="group bg-gray-800/50 hover:bg-gray-800 border border-gray-700 hover:border-fluree-blue rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1">
+<a href="" class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-fluree-blue rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-400 group-hover:text-fluree-blue transition">Total Users</p>
@@ -44,7 +44,7 @@
         </a>
 
         <!-- Roles Overview -->
-        <a href="" class="group bg-gray-800/50 hover:bg-gray-800 border border-gray-700 hover:border-emerald-500 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1">
+        <a href="" class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-emerald-500 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-400 group-hover:text-emerald-500 transition">Roles</p>
@@ -65,7 +65,7 @@
         </a>
 
         <!-- Queries Overview -->
-        <div class="group bg-gray-800/50 hover:bg-gray-800 border border-gray-700 hover:border-purple-500 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1">
+        <div class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-purple-500 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-400 group-hover:text-purple-500 transition">Recent Queries</p>
@@ -114,7 +114,7 @@
 
 <!-- Stats row -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="group bg-gray-800/50 hover:bg-gray-800 border border-gray-700 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 hover:border-fluree-blue">
+    <div class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 hover:border-fluree-blue">
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-400 group-hover:text-fluree-blue transition">Total Records</p>
@@ -134,7 +134,7 @@
         </div>
     </div>
 
-    <div class="group bg-gray-800/50 hover:bg-gray-800 border border-gray-700 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 hover:border-emerald-500">
+    <div class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 hover:border-emerald-500">
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-400 group-hover:text-emerald-500 transition">Active Sessions</p>
@@ -154,7 +154,7 @@
         </div>
     </div>
 
-    <div class="group bg-gray-800/50 hover:bg-gray-800 border border-gray-700 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 hover:border-purple-500">
+    <div class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 hover:border-purple-500">
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-400 group-hover:text-purple-500 transition">Queries Run</p>
@@ -174,7 +174,7 @@
         </div>
     </div>
 
-    <div class="group bg-gray-800/50 hover:bg-gray-800 border border-gray-700 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 hover:border-orange-500">
+    <div class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:shadow-2xl hover:-translate-y-1 hover:border-orange-500">
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-400 group-hover:text-orange-500 transition">Storage Used</p>
@@ -195,7 +195,7 @@
 <!-- Charts & Main content -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
     <!-- Chart card -->
-    <div class="bg-gray-800/50 border border-gray-700 rounded-2xl p-6">
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm6">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-semibold text-white">Query Trends</h3>
             <button class="text-sm text-gray-400 hover:text-white">Last 30 days</button>
@@ -212,7 +212,7 @@
     </div>
 
     <!-- Recent Activity -->
-    <div class="bg-gray-800/50 border border-gray-700 rounded-2xl p-6">
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm6">
         <h3 class="text-lg font-semibold text-white mb-6">Recent Activity</h3>
         <div class="space-y-4">
             <div class="flex items-start space-x-3 p-3 bg-gray-700/50 rounded-xl hover:bg-gray-700 transition">
@@ -266,7 +266,7 @@
 <!-- Fluree Data & Table -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Fluree Data Preview -->
-    <div class="lg:col-span-2 bg-gray-800/50 border border-gray-700 rounded-2xl p-6">
+    <div class="lg:col-span-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm6">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-semibold text-white">Fluree Data Preview</h3>
             <div class="flex space-x-2">
