@@ -125,7 +125,7 @@
                     </a>
                     <div class="ml-6 lg:ml-10 space-y-1 hidden group-hover:block lg:block">
                         <!-- Users Submenu -->
-                        <a href="" class="group flex items-center px-3 py-2 rounded-lg transition-all text-xs text-gray-500 hover:text-white hover:bg-white dark:bg-gray-800/50 pl-4">
+                        <a href="{{ route('userpage') }}" class="group flex items-center px-3 py-2 rounded-lg transition-all text-xs text-gray-500 hover:text-white hover:bg-white dark:bg-gray-800/50 pl-4">
                             <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                             </svg>
