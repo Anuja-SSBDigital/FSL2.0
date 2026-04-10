@@ -44,6 +44,9 @@ class FlureeService
      */
     public function checkLogin(string $username, string $encryptedPassword): ?array
     {
+       
+        $isActive = "1"; // string, not boolean
+
         $query = [
             "select" => [
                 "?user" => [
@@ -65,11 +68,10 @@ class FlureeService
                 ["?user", "userdetails/username", $username],
                 ["?user", "userdetails/password", $encryptedPassword],
                 ["?user", "userdetails/is_deleted", false],
-                ["?user", "userdetails/isactive", true]
+                ["?user", "userdetails/isactive", $isActive]
             ],
-            "findOne" => true
+            "opts" => ["limit" => 1]
         ];
-
         // Note: Confirm predicate direction in your Fluree schema.
         // If incoming links: ["userdetails/username", "?user", $username]
 
@@ -83,16 +85,20 @@ class FlureeService
         }
 
         try {
-            $response = Http::withHeaders($headers)->post($this->getQueryUrl(), $query);
+            $response = Http::withHeaders($headers)
+                ->post($this->getQueryUrl(), $query);   // ← sent as JSON automatically
 
             if ($response->successful()) {
                 $result = $response->json();
-                return $result ?: null;
+
+                // Fluree usually returns array of results
+                return !empty($result) ? ($result[0] ?? $result) : null;
+            } else {
+                Log::error("Fluree login failed - Status: " . $response->status() . " Body: " . $response->body());
             }
         } catch (\Exception $e) {
-            Log::error("Fluree checkLogin failed: " . $e->getMessage());
+            Log::error("Fluree checkLogin exception: " . $e->getMessage());
         }
-
         return null;
     }
 
