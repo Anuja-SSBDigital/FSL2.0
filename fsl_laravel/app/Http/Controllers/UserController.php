@@ -8,30 +8,31 @@ use App\Http\Controllers\Controller;
 
 class UserController extends Controller
 {
-    public function userpage(FlureeService $fluree)
-    {
-       $query = [
+   
+public function userpage(FlureeService $fluree)
+{
+   $query = [
     "select" => [
-        "?u",
-        "?firstname",
-        "?lastname",
-        "?email",
-        "?username",
-        "?appointmentletter"
+        "?u" => [
+            "firstname",
+            "lastname",
+            "email",
+            "username",
+            "appointmentletter"
+        ]
     ],
-    "from" => "userdetails",
     "where" => [
-        ["?u", "userdetails/isactive", "1"],
-        ["?u", "userdetails/is_deleted", false],
-        ["?u", "userdetails/firstname", "?firstname"],
-        ["?u", "userdetails/lastname", "?lastname"],
-        ["?u", "userdetails/email", "?email"],
-        ["?u", "userdetails/username", "?username"],
-        ["?u", "userdetails/appointmentletter", "?appointmentletter"]
+        ["?u", "userdetails/isactive", "1"], 
+        ["?u", "userdetails/is_deleted", false]
+    ],
+    "opts" => [
+        "limit" => 50
     ]
 ];
-        $users = $fluree->query($query);
 
-        return view('users.userpage', compact('users'));
-    }
+    $users = $fluree->query($query);
+ 
+    return view('users.userpage', compact('users'));
+}
+
 }
