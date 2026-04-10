@@ -25,7 +25,34 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+
+        /* DataTables Tailwind Dark Fix */
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background-color: #1f2937 !important;
+            color: white !important;
+            border: 1px solid #374151 !important;
+            border-radius: 0.5rem;
+            padding: 6px;
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_filter label,
+        .dataTables_wrapper .dataTables_length label {
+            color: #9ca3af !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: #d1d5db !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #3b82f6 !important;
+            color: white !important;
+            border-radius: 6px;
+        }
     </style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 </head>
 
 <body class="bg-gray-100 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 min-h-screen">
@@ -228,7 +255,8 @@
             }
         });
     </script> -->
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
         // User Management Submenu Toggle
         const userBtn = document.getElementById('user-management-btn');
@@ -293,6 +321,17 @@
         // Initialize on load
         initTheme();
     </script>
+    <script>
+$(document).ready(function () {
+    $('#usersTable').DataTable({
+        pageLength: 10,
+        ordering: true,
+        searching: true,
+        responsive: true,
+        dom: '<"flex flex-col md:flex-row md:justify-between md:items-center mb-4"lf>rt<"flex flex-col md:flex-row md:justify-between md:items-center mt-4"ip>',
+    });
+});
+</script>
     @endif
 </body>
 

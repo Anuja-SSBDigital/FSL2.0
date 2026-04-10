@@ -17,7 +17,7 @@
             <h2 class="text-xl font-semibold text-white">All Active Users ({{ count($users) }})</h2>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full">
+            <table id="usersTable" class="w-full">
                 <thead class="bg-gray-800/50">
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
@@ -76,5 +76,6 @@
         </div>
     </div>
 </div>
+
 @endsection
 
