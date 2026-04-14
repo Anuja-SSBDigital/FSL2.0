@@ -17,6 +17,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth.fluree')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/userpage', [UserController::class, 'userpage'])->name('userpage');
+    Route::get('/cases/divisions/{deptId}', [App\Http\Controllers\CaseController::class, 'divisions'])->name('cases.divisions');
     Route::get('/cases/create', [App\Http\Controllers\CaseController::class, 'create'])->name('cases.create');
     Route::post('/cases/create', [App\Http\Controllers\CaseController::class, 'store'])->name('cases.store');
 });
