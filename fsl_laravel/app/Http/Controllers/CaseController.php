@@ -25,6 +25,12 @@ $departments = $instId ? $this->fluree->getDepartments($instId) : [];
         return view('cases.create', compact('departments', 'user'));
     }
 
+    public function divisions(string $deptId)
+    {
+        $divisions = $this->fluree->getDivisionsByDept($deptId);
+        return response()->json($divisions);
+    }
+
     public function store(Request $request)
     {
         $user = Session::get('fluree_user');
@@ -41,8 +47,8 @@ $departments = $instId ? $this->fluree->getDepartments($instId) : [];
         ]);
 
         $year = date('Y');
-        $div = $this->fluree->getDivisionsByDept($request->dept_id);
-        $selectedDiv = collect($div)->firstWhere('_id', $request->div_id);
+        $divisions = $this->fluree->getDivisionsByDept($request->dept_id);
+        $selectedDiv = collect($divisions)->firstWhere('_id', $request->div_id);
         $div_code = $selectedDiv['div_code'] ?? 'UNK';
 
         $filter = [
