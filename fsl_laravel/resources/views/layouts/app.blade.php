@@ -103,7 +103,7 @@
                             </svg>
                         </button>
                         <div id="profile-menu" class="absolute right-0 mt-2 w-48 bg-gray-700 rounded-xl shadow-2xl border border-gray-600 hidden py-1 z-50">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 rounded-t-xl">Profile</a>
+                            <a href="{{ route('userpage') }}" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 rounded-t-xl">Profile</a>
                             <form method="POST" action="{{ route('logout') }}" class="block">
                                 @csrf
                                 <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 rounded-b-xl">Logout</button>
@@ -175,6 +175,15 @@
                     </svg>
                     <span class="hidden lg:inline font-medium">Fluree Data</span>
                 </a>
+
+             
+                <a href="{{ route('cases.create') }}" class="group flex items-center px-3 py-3 rounded-xl transition-all {{ request()->routeIs('cases.create') ? 'bg-emerald-500 text-white shadow-lg' : 'text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10' }}">
+                    <svg class="w-5 h-5 mr-0 lg:mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span class="hidden lg:inline font-medium">Create Case</span>
+                </a>
+              
 
                 <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
                     <a href="#" class="group flex items-center px-3 py-3 rounded-xl transition-all text-gray-500 dark:text-gray-400 hover:text-white hover:bg-gray-800">
