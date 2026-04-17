@@ -76,6 +76,16 @@
         </div>
     </div>
 </div>
-
+<script>
+$(document).ready(function () {
+    $('#usersTable').DataTable({
+        pageLength: 10,
+        ordering: true,
+        searching: true,
+        responsive: true,
+        dom: '<"flex flex-col md:flex-row md:justify-between md:items-center mb-4"lf>rt<"flex flex-col md:flex-row md:justify-between md:items-center mt-4"ip>',
+    });
+});
+</script>
 @endsection
 
