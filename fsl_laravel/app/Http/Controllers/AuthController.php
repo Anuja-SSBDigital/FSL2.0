@@ -75,6 +75,39 @@ class AuthController extends Controller
             ->with('success', 'You have been logged out.');
     }
 
+    // Register Form
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        // TODO: Implement Fluree registration
+        return back()->with('success', 'Registration form submitted. (Fluree integration pending)')
+                    ->withInput();
+    }
+
+    // Forgot Password Form  
+    public function showForgotPasswordForm()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        // TODO: Send reset email / Fluree notification
+        return back()->with('status', 'Reset link sent to your email! (Demo mode)');
+    }
+
         /**
      * Encrypt password same as your old C# EncryptString() method
      * Change the logic according to your actual encryption (MD5, SHA256, AES, etc.)
