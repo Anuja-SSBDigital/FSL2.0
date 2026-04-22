@@ -29,7 +29,7 @@ class FlureeService
      * 
      * Proper FQL v2 Block Syntax for Login:
      * {
-     *   "select": ["?user", ["?user", "field1"], ...],
+     *   "selectDistinct": ["?user", ["?user", "field1"], ...],
      *   "where": [
      *     ["?user", "userdetails/username", "?username"],
      *     ["userdetails/username", "?user", "?username"],  // reverse/incoming link
@@ -48,7 +48,7 @@ class FlureeService
         $isActive = "1"; // string, not boolean
 
         $query = [
-            "select" => [
+            "selectDistinct" => [
                 "?user" => [
                     "_id",
                     "userid",
@@ -140,7 +140,7 @@ class FlureeService
 public function getDepartments(string $instId): array
     {
         $query = [
-            "select" => [
+            "selectDistinct" => [
                 "?dept" => [
                     "dept_id",
                     "dept_code",
@@ -165,7 +165,7 @@ public function getDepartments(string $instId): array
     public function getDivisionsByDept(string $deptId): array
     {
         $query = [
-            "select" => [
+            "selectDistinct" => [
                 "?div" => [
                     "div_id",
                     "div_name",
@@ -184,25 +184,229 @@ public function getDepartments(string $instId): array
         return $result ?: [];
     }
 
+    public function getDepartmentMembers(string $deptId): array
+    {
+        $query = [
+            "selectDistinct" => [
+                "?user" => [
+                    "_id",
+                    "userid",
+                    "firstname",
+                    "lastname",
+                    "username",
+                    "email",
+                    "designation",
+                    "status",
+                    ["role_id" => ["role"]]
+                ]
+            ],
+            "where" => [
+                ["?user", "userdetails/dept_id", "?dept"],
+                ["?dept", "department_master/dept_id", $deptId],
+                ["?user", "userdetails/is_deleted", false],
+                ["?user", "userdetails/isactive", "1"]
+            ]
+        ];
+
+        $result = $this->query($query);
+        
+        // Sort by firstname in PHP after fetching
+        if (!empty($result)) {
+            usort($result, function($a, $b) {
+                $nameA = $a['firstname'] ?? '';
+                $nameB = $b['firstname'] ?? '';
+                return strcmp($nameA, $nameB);
+            });
+        }
+        
+        return $result ?: [];
+    }
+
+    /**
+     * Get users by department code
+     * 
+     * Equivalent to GetUsersDeptcodewise from ASP.NET
+     * 
+     * @param string $deptCode - Department code to filter by
+     * @param string|null $excludeUserId - Optional user ID to exclude (pass null to include all)
+     * @return array - Array of users with userid, firstname, lastname
+     */
+    public function getUsersByDeptCode(string $deptCode, ?string $excludeUserId = null): array
+    {
+        $query = [
+            "selectDistinct" => [
+                "?user" => [
+                    "_id",
+                    "userid",
+                    "firstname",
+                    "lastname",
+                    "username",
+                    "email",
+                    "designation",
+                    "status",
+                    ["role_id" => ["role"]]
+                ]
+            ],
+            "where" => [
+                ["?user", "userdetails/dept_id", "?dept"],
+                ["?dept", "department_master/dept_code", $deptCode],
+                ["?user", "userdetails/is_deleted", false],
+                ["?user", "userdetails/isactive", "1"]
+            ]
+        ];
+
+        $result = $this->query($query);
+
+        // Exclude specific user if provided (and not "-1")
+        if ($excludeUserId && $excludeUserId !== "-1") {
+            $result = array_filter($result, function($item) use ($excludeUserId) {
+                $itemUserId = $item['userid'] ?? $item['_id'] ?? '';
+                return $itemUserId !== $excludeUserId;
+            });
+            // Re-index array after filter
+            $result = array_values($result);
+        }
+
+        // Sort by firstname
+        if (!empty($result)) {
+            usort($result, function($a, $b) {
+                $nameA = $a['firstname'] ?? '';
+                $nameB = $b['firstname'] ?? '';
+                return strcmp($nameA, $nameB);
+            });
+        }
+
+        return $result ?: [];
+    }
+
     public function getCaseCountByFilter(array $filter): int
     {
         $where = [];
         if (isset($filter['dept_id'])) {
-            $where[] = ["?case", "case/dept_id", $filter['dept_id']];
+            $where[] = ["?case", "evidence_acceptancedetails/department_code", $filter['dept_id']];
         }
         if (isset($filter['div_id'])) {
-            $where[] = ["?case", "case/div_id", $filter['div_id']];
+            $where[] = ["?case", "evidence_acceptancedetails/div_code", $filter['div_id']];
         }
         if (isset($filter['year'])) {
-            $where[] = ["?case", "case/year", $filter['year']];
+            $where[] = ["?case", "evidence_acceptancedetails/caseno", "?caseno"];
+        }
+
+        if (empty($where)) {
+            return 0;
         }
 
         $query = [
-            "select" => ["*"],
+            "selectDistinct" => ["?case" => ["evidence_acceptancedetails/evidenceid", "evidence_acceptancedetails/caseno"]],
             "where" => $where,
-            "opts" => ["limit" => 1]
+            "opts" => ["limit" => 10000]
         ];
         $result = $this->query($query);
+        
+        // Filter by year if provided (by parsing caseno)
+        if (isset($filter['year'])) {
+            $result = array_filter($result, function($item) use ($filter) {
+                $caseno = $item[1] ?? ''; // caseno is second element
+                return strpos($caseno, (string)$filter['year']) !== false;
+            });
+        }
+        
         return count($result);
+    }
+
+    public function caseExists(string $caseNumber): bool
+    {
+        $query = [
+            "selectDistinct" => ["?case" => ["evidence_acceptancedetails/caseno"]],
+            "where" => [
+                ["?case", "evidence_acceptancedetails/caseno", $caseNumber]
+            ],
+            "opts" => ["limit" => 1]
+        ];
+
+        $result = $this->query($query);
+        return !empty($result);
+    }
+
+    public function hashExists(string $hash): bool
+    {
+        $query = [
+            "selectDistinct" => ["?evidence" => ["evidence_acceptancedetails/hash"]],
+            "where" => [
+                ["?evidence", "evidence_acceptancedetails/hash", $hash]
+            ],
+            "opts" => ["limit" => 1]
+        ];
+
+        $result = $this->query($query);
+        return !empty($result);
+    }
+
+    public function getUserAcceptanceDetails(string $caseNumber): array
+    {
+        $query = [
+            "selectDistinct" => [
+                "?evidence" => [
+                    "_id",
+                    "evidenceid",
+                    "caseno",
+                    "receiptfilepath",
+                    "agencyreferanceno",
+                    "agencyname",
+                    "notes",
+                    "status",
+                    "hash",
+                    "department_code",
+                    "inst_code",
+                    "div_code",
+                    "noof_exhibits",
+                    "caseassign_userid",
+                    "enteredby",
+                    "createddate",
+                    "updateddate"
+                ]
+            ],
+            "where" => [
+                ["?evidence", "evidence_acceptancedetails/caseno", $caseNumber]
+            ],
+            "opts" => ["limit" => 1]
+        ];
+
+        $result = $this->query($query);
+        return $result[0] ?? [];
+    }
+
+    public function getEvidenceById(string $evidenceId): array
+    {
+        $query = [
+            "selectDistinct" => [
+                "?evidence" => [
+                    "_id",
+                    "evidence_acceptancedetails/evidenceid",
+                    "evidence_acceptancedetails/caseno",
+                    "evidence_acceptancedetails/receiptfilepath",
+                    "evidence_acceptancedetails/agencyreferanceno",
+                    "evidence_acceptancedetails/agencyname",
+                    "evidence_acceptancedetails/notes",
+                    "evidence_acceptancedetails/status",
+                    "evidence_acceptancedetails/hash",
+                    "evidence_acceptancedetails/department_code",
+                    "evidence_acceptancedetails/inst_code",
+                    "evidence_acceptancedetails/div_code",
+                    "evidence_acceptancedetails/noof_exhibits",
+                    "evidence_acceptancedetails/caseassign_userid",
+                    "evidence_acceptancedetails/enteredby",
+                    "evidence_acceptancedetails/createddate",
+                    "evidence_acceptancedetails/updateddate"
+                ]
+            ],
+            "where" => [
+                ["?evidence", "evidence_acceptancedetails/evidenceid", $evidenceId]
+            ],
+            "opts" => ["limit" => 1]
+        ];
+
+        $result = $this->query($query);
+        return $result[0] ?? [];
     }
 }
