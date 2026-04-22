@@ -10,7 +10,15 @@
             theme: {
                 extend: {
                     colors: {
-                        'fluree-blue': '#1e40af',
+                        primary: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9'
+                        },
+                        emerald: {
+                            500: '#10b981',
+                            600: '#059669'
+                        }
                     }
                 }
             }
@@ -18,68 +26,99 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        * { font-family: 'Inter', sans-serif; }
+        body { min-height: 100vh; }
+        .glass {
+            background: rgba(15, 23, 42, 0.80);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        @keyframes blob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(12px, -16px) scale(1.05); }
+            66% { transform: translate(-10px, 14px) scale(0.95); }
+        }
+        .animate-blob { animation: blob 8s infinite ease-in-out; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-2xl">
-        <div class="text-center mb-10">
-            <div class="mx-auto w-20 h-20 bg-gradient-to-r from-fluree-blue to-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                </svg>
-            </div>
-            <h1 class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-3">Welcome Back</h1>
-            <p class="text-gray-600">Sign in to your Fluree account</p>
-        </div>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+    <div class="fixed inset-0 pointer-events-none">
+        <div class="absolute -left-20 top-16 h-60 w-60 rounded-full bg-gradient-to-br from-primary-500/30 via-cyan-400/20 to-transparent blur-3xl animate-blob"></div>
+        <div class="absolute right-0 bottom-24 h-72 w-72 rounded-full bg-gradient-to-br from-emerald-500/25 via-sky-400/10 to-transparent blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="absolute left-1/2 top-2/3 h-44 w-44 -translate-x-1/2 rounded-full bg-gradient-to-br from-violet-500/15 via-fuchsia-500/10 to-transparent blur-3xl"></div>
+    </div>
 
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-3">Username</label>
-                    <input type="text" 
-                           name="username" 
-                           value="{{ old('username') }}"
-                           required
-                           class="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-fluree-blue/20 focus:border-fluree-blue transition duration-200 bg-gray-50 @error('username') border-red-300 bg-red-50 @enderror">
-                    @error('username')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-3">Password</label>
-                    <input type="password" 
-                           name="password" 
-                           required
-                           class="w-full px-5 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-fluree-blue/20 focus:border-fluree-blue transition duration-200 bg-gray-50 @error('password') border-red-300 bg-red-50 @enderror">
-                    @error('password')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                @if ($errors->any() && !$errors->has('username') && !$errors->has('password'))
-                    <div class="p-4 bg-red-100 border border-red-200 rounded-2xl text-red-700 text-sm">
-                        {{ $errors->first() }}
+    <div class="relative z-10 flex min-h-screen items-center justify-center px-4 py-10">
+        <div class="w-full max-w-[360px]">
+            <div class="glass relative overflow-hidden rounded-[28px] border border-white/10 p-5 shadow-[0_24px_64px_rgba(15,23,42,0.45)]">
+                <div class="mb-5 text-center">
+                    <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-3xl bg-gradient-to-br from-primary-600 to-emerald-500 text-white shadow-lg shadow-primary-500/20">
+                        <span class="text-lg font-semibold">F</span>
                     </div>
-                @endif
+                    <h1 class="text-2xl font-semibold text-white">Welcome Back</h1>
+                    <p class="mt-2 text-sm text-slate-400">Sign in to your Fluree account.</p>
+                </div>
 
                 @if (session('success'))
-                    <div class="p-4 bg-green-100 border border-green-200 rounded-2xl text-green-700 text-sm">
+                    <div class="mb-4 rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-200">
                         {{ session('success') }}
                     </div>
                 @endif
 
-                <button type="submit"
-                        class="w-full bg-gradient-to-r from-fluree-blue to-blue-600 hover:from-fluree-blue/90 hover:to-blue-600/90 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5">
-                    Sign In
-                </button>
-            </div>
-        </form>
+                @if ($errors->any())
+                    <div class="mb-4 rounded-3xl border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-200">
+                        <ul class="list-inside list-disc space-y-1 pl-4">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
-        <div class="mt-8 text-center">
-            <p class="text-sm text-gray-500">Powered by Fluree & Laravel</p>
+                <form method="POST" action="{{ route('login') }}" id="loginForm" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label for="username" class="text-sm font-medium text-slate-300">Email or Username</label>
+                        <input id="username" name="username" type="text" value="{{ old('username') }}" required autofocus
+                            class="mt-2 w-full rounded-3xl border border-slate-700/90 bg-slate-900 px-4 py-3 text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15"
+                            placeholder="you@example.com or username">
+                    </div>
+
+                    <div>
+                        <label for="password" class="text-sm font-medium text-slate-300">Password</label>
+                        <input id="password" name="password" type="password" required
+                            class="mt-2 w-full rounded-3xl border border-slate-700/90 bg-slate-900 px-4 py-3 text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15"
+                            placeholder="••••••••">
+                    </div>
+
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <label class="inline-flex items-center gap-2 text-sm text-slate-400">
+                            <input type="checkbox" name="remember" class="h-4 w-4 rounded border-slate-600 bg-slate-800 text-primary-500 focus:ring-primary-500">
+                            Remember me
+                        </label>
+                        <a href="{{ route('showForgotPasswordForm') }}" class="text-sm font-medium text-slate-200 transition hover:text-primary-300">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" id="submitBtn"
+                        class="inline-flex w-full items-center justify-center rounded-3xl bg-gradient-to-r from-primary-600 via-emerald-500 to-cyan-500 px-5 py-3 text-sm font-semibold text-white shadow-2xl shadow-primary-500/20 transition hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-primary-500/20">
+                        Sign in
+                    </button>
+                </form>
+
+                <div class="mt-5 border-t border-white/10 pt-4 text-center text-sm text-slate-400">
+                    <p class="uppercase tracking-[0.22em] text-slate-500">Or continue with</p>
+                    <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                        <button class="inline-flex items-center justify-center gap-2 rounded-3xl border border-slate-700/80 bg-slate-900 px-3 py-2 text-sm text-slate-200 transition hover:border-primary-500 hover:text-white">
+                            <span class="h-5 w-5 rounded-full bg-slate-700 flex items-center justify-center text-xs">G</span>
+                            Google
+                        </button>
+                        <button class="inline-flex items-center justify-center gap-2 rounded-3xl border border-slate-700/80 bg-slate-900 px-3 py-2 text-sm text-slate-200 transition hover:border-cyan-500 hover:text-white">
+                            <span class="h-5 w-5 rounded-full bg-slate-700 flex items-center justify-center text-xs">M</span>
+                            Microsoft
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
