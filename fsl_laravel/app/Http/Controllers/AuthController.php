@@ -51,20 +51,54 @@ class AuthController extends Controller
     public function dashboard()
     {
         $user = Session::get('fluree_user');
-
-        // Optional: Fetch some data from Fluree after login
-        $exampleData = [];
-        try {
-            $exampleData = $this->fluree->query([
-                'select' => ['*'],
-                'from'   => 'Person',        // Change this according to your ledger
-                'limit'  => 10,
-            ]);
-        } catch (\Exception $e) {
-            // Silently fail if query has issue
+        if (!$user) {
+            return redirect()->route('login');
         }
 
-        return view('dashboard', compact('user', 'exampleData'));
+        $userRole = $user['role_id']['role'] ?? null;
+        $userDeptCode = $user['dept_id']['dept_code'] ?? null;
+        $instId = $user['inst_id']['_id'] ?? null;
+
+        $allUsers = [];
+        $userStats = [];
+        $totalCases = 0;
+        $pendingCases = 0;
+        $completedCases = 0;
+
+        if ($userRole === 'SuperAdmin') {
+            // Admin sees all users and their case counts
+            $allUsers = $this->fluree->getAllUsers();
+            
+            // Get all cases and count by user
+            $allCases = $this->fluree->getAllCases();
+            $totalCases = count($allCases);
+            $pendingCases = count(array_filter($allCases, fn($c) => ($c['status'] ?? '') === 'Pending for Assign' || ($c['status'] ?? '') === 'Assigned'));
+            $completedCases = count(array_filter($allCases, fn($c) => ($c['status'] ?? '') === 'Completed'));
+            
+            // Build user statistics
+            foreach ($allUsers as $u) {
+                $userId = $u['userid'] ?? '';
+                $userCases = array_filter($allCases, function($case) use ($userId) {
+                    return ($case['enteredby'] ?? null) === $userId || 
+                           ($case['caseassign_userid'] ?? null) === $userId;
+                });
+                
+                $userStats[] = [
+                    'user' => $u,
+                    'total_cases' => count($userCases),
+                    'pending_cases' => count(array_filter($userCases, fn($c) => ($c['status'] ?? '') === 'Pending for Assign' || ($c['status'] ?? '') === 'Assigned')),
+                    'completed_cases' => count(array_filter($userCases, fn($c) => ($c['status'] ?? '') === 'Completed'))
+                ];
+            }
+        } else {
+            // Regular user sees only their department's cases
+            $deptCases = $this->fluree->getCasesByDepartment($userDeptCode);
+            $totalCases = count($deptCases);
+            $pendingCases = count(array_filter($deptCases, fn($c) => ($c['status'] ?? '') === 'Pending for Assign' || ($c['status'] ?? '') === 'Assigned'));
+            $completedCases = count(array_filter($deptCases, fn($c) => ($c['status'] ?? '') === 'Completed'));
+        }
+
+        return view('dashboard', compact('user', 'userRole', 'allUsers', 'userStats', 'totalCases', 'pendingCases', 'completedCases'));
     }
 
     // Logout

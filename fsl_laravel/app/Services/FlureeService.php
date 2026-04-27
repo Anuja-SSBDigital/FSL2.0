@@ -409,4 +409,249 @@ public function getDepartments(string $instId): array
         $result = $this->query($query);
         return $result[0] ?? [];
     }
+
+    /**
+     * Get all cases (for SuperAdmin)
+     * Returns all evidence acceptance records with full details
+     */
+    public function getAllCases(): array
+    {
+        $query = [
+            "selectDistinct" => [
+                "?evidence" => [
+                    "_id",
+                    "evidenceid",
+                    "caseno",
+                    "receiptfilepath",
+                    "agencyreferanceno",
+                    "agencyname",
+                    "notes",
+                    "status",
+                    "hash",
+                    "department_code",
+                    "inst_code",
+                    "div_code",
+                    "noof_exhibits",
+                    "caseassign_userid",
+                    "enteredby",
+                    "createddate",
+                    "updateddate"
+                ]
+            ],
+            "where" => [],
+            "opts" => ["limit" => 1000]
+        ];
+
+        $result = $this->query($query);
+        
+        // Sort by createddate descending
+        if (!empty($result)) {
+            usort($result, function($a, $b) {
+                $dateA = $a['createddate'] ?? '';
+                $dateB = $b['createddate'] ?? '';
+                return strcmp($dateB, $dateA); // Reverse for descending
+            });
+        }
+        
+        return $result ?: [];
+    }
+
+    /**
+     * Get cases by department code
+     * Returns all evidence acceptance records for a specific department
+     */
+    public function getCasesByDepartment(string $deptCode): array
+    {
+        $query = [
+            "selectDistinct" => [
+                "?evidence" => [
+                    "_id",
+                    "evidenceid",
+                    "caseno",
+                    "receiptfilepath",
+                    "agencyreferanceno",
+                    "agencyname",
+                    "notes",
+                    "status",
+                    "hash",
+                    "department_code",
+                    "inst_code",
+                    "div_code",
+                    "noof_exhibits",
+                    "caseassign_userid",
+                    "enteredby",
+                    "createddate",
+                    "updateddate"
+                ]
+            ],
+            "where" => [
+                ["?evidence", "evidence_acceptancedetails/department_code", $deptCode]
+            ],
+            "opts" => ["limit" => 1000]
+        ];
+
+        $result = $this->query($query);
+
+        // Sort by createddate descending
+        if (!empty($result)) {
+            usort($result, function($a, $b) {
+                $dateA = $a['createddate'] ?? '';
+                $dateB = $b['createddate'] ?? '';
+                return strcmp($dateB, $dateA); // Reverse for descending
+            });
+        }
+
+        return $result ?: [];
+    }
+
+    /**
+     * Get all cases with filters (for SuperAdmin)
+     * Supports filtering by department, status, user, and date range
+     */
+    public function getAllCasesWithFilters(array $filters = []): array
+    {
+        $where = [];
+
+        // Add filters
+        if (!empty($filters['department'])) {
+            $where[] = ["?evidence", "evidence_acceptancedetails/department_code", $filters['department']];
+        }
+
+        if (!empty($filters['status'])) {
+            $where[] = ["?evidence", "evidence_acceptancedetails/status", $filters['status']];
+        }
+
+        if (!empty($filters['user'])) {
+            $where[] = ["?evidence", "evidence_acceptancedetails/enteredby", $filters['user']];
+        }
+
+        // Date range filters (if provided)
+        if (!empty($filters['date_from'])) {
+            $where[] = ["?evidence", "evidence_acceptancedetails/createddate", "?createddate"];
+        }
+
+        if (!empty($filters['date_to'])) {
+            $where[] = ["?evidence", "evidence_acceptancedetails/createddate", "?createddate"];
+        }
+
+        $query = [
+            "selectDistinct" => [
+                "?evidence" => [
+                    "_id",
+                    "evidenceid",
+                    "caseno",
+                    "receiptfilepath",
+                    "agencyreferanceno",
+                    "agencyname",
+                    "notes",
+                    "status",
+                    "hash",
+                    "department_code",
+                    "inst_code",
+                    "div_code",
+                    "noof_exhibits",
+                    "caseassign_userid",
+                    "enteredby",
+                    "createddate",
+                    "updateddate"
+                ]
+            ],
+            "where" => $where,
+            "opts" => ["limit" => 1000]
+        ];
+
+        // Add date range filter if provided
+        if (!empty($filters['date_from']) || !empty($filters['date_to'])) {
+            $filterConditions = [];
+
+            if (!empty($filters['date_from'])) {
+                $filterConditions[] = "(>= ?createddate \"" . $filters['date_from'] . "\")";
+            }
+
+            if (!empty($filters['date_to'])) {
+                $filterConditions[] = "(<= ?createddate \"" . $filters['date_to'] . "\")";
+            }
+
+            if (!empty($filterConditions)) {
+                $query["opts"]["filter"] = "(" . implode(" and ", $filterConditions) . ")";
+            }
+        }
+
+        $result = $this->query($query);
+        
+        // Sort by createddate descending
+        if (!empty($result)) {
+            usort($result, function($a, $b) {
+                $dateA = $a['createddate'] ?? '';
+                $dateB = $b['createddate'] ?? '';
+                return strcmp($dateB, $dateA); // Reverse for descending
+            });
+        }
+        
+        return $result ?: [];
+    }
+
+    /**
+     * Get all users for filtering (SuperAdmin only)
+     */
+    // public function getAllUsers(): array
+    // {
+    //     $query = [
+    //         "selectDistinct" => [
+    //             "?user" => [
+    //                 "_id",
+    //                 "userid",
+    //                 "firstname",
+    //                 "lastname",
+    //                 "username",
+    //                 "email",
+    //                 "designation",
+    //                 "status",
+    //                 ["role_id" => ["role"]],
+    //                 ["dept_id" => ["dept_name", "dept_code"]]
+    //             ]
+    //         ],
+    //         "where" => [
+    //             ["?user", "userdetails/is_deleted", false],
+    //             ["?user", "userdetails/isactive", "1"]
+    //         ],
+    //         "opts" => ["orderBy" => "?firstname", "limit" => 1000]
+    //     ];
+
+    //     $result = $this->query($query);
+    //     return $result ?: [];
+    // }
+
+    /**
+     * Get all users for filtering (SuperAdmin only)
+     */
+    public function getAllUsers(): array
+    {
+        $query = [
+            "selectDistinct" => [
+                "?user" => [
+                    "_id",
+                    "userid",
+                    "firstname",
+                    "lastname",
+                    "username",
+                    "email",
+                    "designation",
+                    "status",
+                    ["role_id" => ["role"]],
+                    ["dept_id" => ["dept_name", "dept_code"]]
+                ]
+            ],
+            "where" => [
+                ["?user", "userdetails/is_deleted", false],
+                ["?user", "userdetails/isactive", "1"],
+                ["?user", "userdetails/firstname", "?firstname"]
+            ],
+            "opts" => ["orderBy" => "?firstname", "limit" => 1000]
+        ];
+
+        $result = $this->query($query);
+        return $result ?: [];
+    }
 }
+

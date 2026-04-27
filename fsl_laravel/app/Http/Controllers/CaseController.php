@@ -16,6 +16,82 @@ class CaseController extends Controller
         $this->fluree = $fluree;
     }
 
+    /**
+     * List all cases with role-based access and filtering
+     * SuperAdmin: View all cases with department and user filters
+     * Others: View their pending/completed cases
+     */
+    public function index(Request $request)
+    {
+        $user = Session::get('fluree_user');
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $userRole = $user['role_id']['role'] ?? null;
+        $userDeptCode = $user['dept_id']['dept_code'] ?? null;
+        $instId = $user['inst_id']['_id'] ?? null;
+
+        $cases = [];
+        $departments = [];
+        $users = [];
+        $selectedDept = null;
+        $selectedUser = null;
+        $statusFilter = $request->get('status', 'all'); // all, pending, completed
+        
+        // Get all cases based on role
+        if ($userRole === 'SuperAdmin') {
+            // Admin can see all cases with filters
+            $departments = $instId ? $this->fluree->getDepartments($instId) : [];
+            
+            // Apply filters
+            $selectedDept = $request->get('department');
+            $selectedUser = $request->get('user');
+            
+            // Get users - filter by department if selected
+            if ($selectedDept) {
+                $users = $this->fluree->getUsersByDeptCode($selectedDept);
+            } else {
+                $users = $this->fluree->getAllUsers();
+            }
+            
+            if ($selectedDept) {
+                $cases = $this->fluree->getCasesByDepartment($selectedDept);
+                
+                // Filter by user if selected
+                if ($selectedUser) {
+                    $cases = array_filter($cases, function($case) use ($selectedUser) {
+                        return ($case['enteredby'] ?? null) === $selectedUser || 
+                               ($case['caseassign_userid'] ?? null) === $selectedUser;
+                    });
+                    $cases = array_values($cases);
+                }
+            } else {
+                // Show all cases if no department filter
+                $cases = $this->fluree->getAllCases();
+            }
+        } else {
+            // Other users see only their department's cases
+            $cases = $this->fluree->getCasesByDepartment($userDeptCode);
+            
+            // Filter by status for non-admin users
+            if ($statusFilter !== 'all') {
+                $cases = array_filter($cases, function($case) use ($statusFilter) {
+                    $status = $case['status'] ?? '';
+                    if ($statusFilter === 'pending') {
+                        return $status === 'Pending for Assign' || $status === 'Assigned';
+                    } elseif ($statusFilter === 'completed') {
+                        return $status === 'Completed';
+                    }
+                    return true;
+                });
+                $cases = array_values($cases);
+            }
+        }
+
+        return view('cases.index', compact('cases', 'user', 'userRole', 'departments', 'users', 'selectedDept', 'selectedUser', 'statusFilter'));
+    }
+
     public function create()
     {
 $user = Session::get('fluree_user');
@@ -29,6 +105,25 @@ $departments = $instId ? $this->fluree->getDepartments($instId) : [];
     {
         $divisions = $this->fluree->getDivisionsByDept($deptId);
         return response()->json($divisions);
+    }
+
+    public function getUsersByDepartment(Request $request)
+    {
+        $request->validate([
+            'dept_code' => 'required|string'
+        ]);
+
+        $users = $this->fluree->getUsersByDeptCode($request->dept_code);
+        
+        // Format for dropdown
+        $formattedUsers = array_map(function($user) {
+            return [
+                'userid' => $user['userid'] ?? '',
+                'name' => ($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? '')
+            ];
+        }, $users);
+
+        return response()->json($formattedUsers);
     }
 
     public function checkNumber(Request $request)
@@ -198,6 +293,41 @@ $departments = $instId ? $this->fluree->getDepartments($instId) : [];
         return view('cases.add-details', compact('caseDetails', 'caseNo', 'user'));
     }
 
+    /**
+     * Show case details with role-based access control
+     * SuperAdmin: Can view all case data
+     * Other roles: Can only view cases from their department
+     */
+    public function show(string $caseNo)
+    {
+        $user = Session::get('fluree_user');
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Get case details
+        $caseDetails = $this->fluree->getUserAcceptanceDetails($caseNo);
+        if (!$caseDetails) {
+            return redirect()->route('dashboard')->withErrors(['error' => 'Case not found.']);
+        }
+
+        // Role-based access control
+        $userRole = $user['role_id']['role'] ?? null;
+        $userDeptCode = $user['dept_id']['dept_code'] ?? null;
+        $caseDeptCode = $caseDetails['department_code'] ?? null;
+
+        // Allow access if:
+        // 1. User is SuperAdmin (can see all)
+        // 2. User's department matches case's department
+        if ($userRole !== 'SuperAdmin' && $userDeptCode !== $caseDeptCode) {
+            return redirect()->route('dashboard')->withErrors([
+                'error' => 'You do not have permission to view this case. Only your department cases are accessible.'
+            ]);
+        }
+
+        return view('cases.show', compact('caseDetails', 'caseNo', 'user'));
+    }
+
     public function assign(string $caseNo)
     {
         $user = Session::get('fluree_user');
@@ -283,23 +413,23 @@ $departments = $instId ? $this->fluree->getDepartments($instId) : [];
      * Get users by department code (AJAX endpoint)
      * Used to populate user dropdown when department changes
      */
-    public function getUsersByDepartment(Request $request)
-    {
-        $deptCode = $request->input('dept_code');
-        $excludeUserId = $request->input('exclude_user_id', null);
+    // public function getUsersByDepartment(Request $request)
+    // {
+    //     $deptCode = $request->input('dept_code');
+    //     $excludeUserId = $request->input('exclude_user_id', null);
 
-        if (!$deptCode) {
-            return response()->json(['error' => 'Department code required'], 400);
-        }
+    //     if (!$deptCode) {
+    //         return response()->json(['error' => 'Department code required'], 400);
+    //     }
 
-        try {
-            $users = $this->fluree->getUsersByDeptCode($deptCode, $excludeUserId);
-            return response()->json(['data' => $users]);
-        } catch (\Exception $e) {
-            Log::error('Failed to fetch users by department', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Failed to fetch users'], 500);
-        }
-    }
+    //     try {
+    //         $users = $this->fluree->getUsersByDeptCode($deptCode, $excludeUserId);
+    //         return response()->json(['data' => $users]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to fetch users by department', ['error' => $e->getMessage()]);
+    //         return response()->json(['error' => 'Failed to fetch users'], 500);
+    //     }
+    // }
 
     public function assignCase(Request $request, string $caseNo)
     {
